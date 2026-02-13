@@ -1,0 +1,60 @@
+Part 1: Navigation & File Manipulation
+
+- Where am I? pwd (Print Working Directory)
+- What’s here? ls -lah (List all files, including hidden .env files, with human-readable sizes).
+- The "CRUD" of Files:
+```
+mkdir devops-practice (Create a folder)
+touch server.log (Create an empty file)
+cp server.log server.log.bak (Copy/Backup)
+mv server.log ./devops-practice/ (Move)
+rm server.log.bak (Delete—be careful, there is no Trash Bin in Linux!)
+```
+
+Part 2: Devops debugging
+These are the commands you'll use to debug a failing Node.js production server.
+
+1. Grep (Search)
+Imagine your access.log has 10,000 lines. You only want to see 404 errors.
+```
+grep "404" access.log
+```
+2. Tail (Monitoring)
+Watch your logs in real-time as requests hit your Express server:
+```
+tail -f access.log
+```
+3. Permissions (The "Permission Denied" Fixer)
+Understand chmod.
+```
+chmod 400 key.pem: Makes a file read-only (required for AWS SSH keys).
+chmod +x script.sh: Makes a script executable.
+```
+
+Part 3: Practice:
+Perform this sequence to prove you've mastered the basics:
+
+- Create a directory called mern-logs. mkdir mern-logs
+- Inside it, create a file named app.log. touch app.log
+- Add 5 lines of dummy text to it (use echo "Error: Connection failed" >> app.log). nano app.log
+- Search the file for the word "Error" and save the result into a new file called errors.txt. grep "Error" app.log >> server.log
+- Change the permissions of errors.txt so that it is "Read Only" for everyone. chmod 400 server.log
+
+--------------------------------------------------------------------------------------------------
+
+Networking and connectivity
+|Command,Purpose|MERN Use Case|
+|curl -I localhost:5000|Fetch HTTP headers|Check if your Express server is alive.|
+|ping google.com|Check connectivity|Is the server connected to the internet?|
+|nslookup google.com|DNS lookup|"Verify if your domain (e.g. api.myapp.com) points to the right IP."|
+|lsof -i :5000|List Open Files|"Find which process is ""hogging"" port 5000 (usually a zombie Node process)."|
+|netstat -tuln|List active ports|See all listening ports on your machine.|
+
+System Resources & Processes
+Use these when your Node.js app is running slow or crashing due to memory leaks.
+Command,Purpose,Why it matters
+top or htop,Interactive process viewer,See which process is eating your CPU/RAM.
+df -h,Disk free space,Check if your MongoDB database stopped because the disk is full.
+free -m,Check Memory (RAM),"See if your server needs a ""swap"" file or a RAM upgrade."
+`ps aux,grep node`,Find Node processes
+kill -9 <PID>,Force Kill,Hard-stop a process that won't close normally.
