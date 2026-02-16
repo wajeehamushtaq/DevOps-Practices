@@ -1,0 +1,65 @@
+Docker helps in packaging your code, runtime, and dependencies into a single "Image."
+
+Docker Core concepts:
+Dockerfile: instructions to make a package
+Container: running image of the application
+Image: executable package built
+Docker-compose: to build *multiple* images and run containers
+
+----
+Task; Run and build
+Run these commands to make code into portable unit
+1. Build Image of app:
+docker build -t my-app
+
+2. Run container
+docker run -p 5000:5000 --name my-running-app my-app
+-p 5000:5000 bind the computer port with container port
+
+3. check if its running
+docker ps
+
+----
+Multi- stage build
+
+This is the gold standard for deploying React apps. If you just run npm start inside a container, you’re running a heavy development server meant for hot-reloading—not for production traffic.
+
+In a Multi-stage build, we use a heavy Node.js image to compile the React code, then we throw away the "builder" and move only the final static files (the dist or build folder) into a tiny Nginx image.
+
+Why this is "DevOps" Level:
+- Image Size: A standard Node image is ~900MB. An Nginx-alpine image is ~20MB. You just saved 98% of your storage and bandwidth.
+- Security: Your source code and node_modules are not in the final image. If someone breaches the container, they only find static HTML/JS.
+- Performance: Nginx is purpose-built to serve static files much faster than a Node.js server can.
+
+----
+Nginx
+
+Think of Nginx (pronounced "Engine-X") as the high-speed traffic controller of the internet. While your Node.js server is the "chef" making the food (processing logic), Nginx is the "host" at the front door managing the queue, checking IDs, and handing out menus.
+
+In the MERN stack, you rarely want your Node.js API exposed directly to the public web. You put Nginx in front of it.
+
+*5 Ways Nginx Helps Us (The DevOps "Swiss Army Knife")*
+1. Reverse Proxy (The Shield)
+Instead of users hitting http://your-ip:5000 directly, they hit Nginx on port 80. Nginx then forwards the request to Node.js.
+
+Benefit: It hides your backend's identity and port structure, adding a layer of security.
+
+2. Load Balancing (The Scaler)
+If your MERN app becomes famous, one Node.js process won't be enough. You might run 3 instances of your API.
+
+Benefit: Nginx can distribute incoming traffic across all 3 instances. If one crashes, Nginx stops sending traffic to it automatically.
+
+3. Serving Static Content (The Speed Demon)
+Node.js is great at logic, but it's "heavy" for serving images, CSS, and JS files.
+
+Benefit: Nginx can serve your React build folder directly from the disk. It is much faster and uses less RAM than Node for this specific task.
+
+4. SSL Termination (The Security Guard)
+Managing HTTPS certificates (certbot, OpenSSL) inside a Node.js app is a headache.
+
+Benefit: You give your SSL certificates to Nginx. It handles the encryption/decryption "handshake" and sends plain traffic to your backend internally. This saves your Node.js CPU for actual app logic.
+
+5. Caching (The Memory)
+If 1,000 people request the same api/products list, why should Node.js query MongoDB 1,000 times?
+
+Benefit: Nginx can "remember" (cache) the response for a few seconds/minutes and serve it instantly to the next user without ever bothering your backend.

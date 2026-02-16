@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend # Path to your React folder
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./backend # Path to your Node folder
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://db:27017/mern-db
+    depends_on:
+      - db
+
+  db:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
