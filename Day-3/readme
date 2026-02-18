@@ -1,4 +1,4 @@
-AWS
+## AWS
 
 Before you do anything, you need an account. AWS offers a 6-month Free Tier.
 - Create an account: aws.amazon.com/free
@@ -85,6 +85,7 @@ services:
       - "80:80"
     restart: always
 *Note: if any time docker is commands not working or giving obsolute error, run this command: newgrp docker*
+
 5. Spin it up!
 docker-compose up -d
 The -d flag runs it in "Detached" mode, so it stays running even after you close the terminal. Once both FE and BE deployed then under EC2, open the link of public instance url on browser. This will open our deployed application. 

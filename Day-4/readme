@@ -1,0 +1,6 @@
+## CI/CD
+We will use GitHub Actions, which is free and integrates perfectly with your MERN repo.
+1. CI (Continuous Integration): GitHub builds your Docker images and pushes them to your Amazon ECR.
+2. CD (Continuous Deployment): GitHub SSHes into your EC2 and runs docker-compose pull && docker-compose up -d.
+
+In Day-3 project, create a directory structure: .github/workflows/deploy.yml.
