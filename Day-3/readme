@@ -1,0 +1,90 @@
+AWS
+
+Before you do anything, you need an account. AWS offers a 6-month Free Tier.
+- Create an account: aws.amazon.com/free
+- The "Golden Rule" of Cloud DevOps: Never use your Root User (the email you signed up with) for daily tasks.
+- Action: Create an IAM User (Identity & Access Management) with AdministratorAccess and enable MFA (Multi-Factor Authentication).
+
+Step 2: VPC – Your Private Data Center
+In DevOps, you don't just "upload code." You build a network. *A VPC (Virtual Private Cloud) is your own isolated section of the AWS Cloud.*
+
+The VPC Components for MERN:
+- Subnets: Think of these as "rooms" in your house.
+    - Public Subnet: Where your Nginx/React lives (accessible to the internet).
+    - Private Subnet: Where your Node.js API and MongoDB live (hidden from the internet).
+- Internet Gateway (IGW): The "Front Door" that allows traffic into your VPC.
+- Security Groups: The "Bouncers." They define which ports are open (e.g., Port 80 for Web, Port 22 for SSH).
+
+----------------------------------------------------------------------------------------------
+
+## How to push your code to Cloud and access from your local
+
+1. Push your Code like Frontend (FE) to ECR
+Just like the backend, your frontend needs its own "home" in the cloud.
+Create a new ECR Repo: Run aws ecr create-repository --repository-name mern-frontend.
+Build the FE Image: Use the Multi-stage Dockerfile we created earlier.
+Tag & Push: Repeat the docker tag and docker push commands, but use the mern-frontend repository name.
+
+2. Launch & Connect your EC2 Instance
+A. Launching the Instance
+Log into your AWS Console and search for EC2.
+Click Launch Instance.
+Name: mern-server.
+OS (AMI): Select Amazon Linux 2023 (It’s Free Tier and optimized for AWS).
+Instance Type: t3.micro (or t2.micro depending on your region's Free Tier).
+Key Pair: Click "Create new key pair." Name it mern-key, select .pem, and download it. Store it safely!
+Network Settings (Security Group):
+Allow SSH (Port 22) from "My IP".
+Allow HTTP (Port 80) from "Anywhere" (for your React app).
+Allow Custom TCP (Port 5000) from "Anywhere" (for your Node API).
+Click Launch Instance.
+
+B. Connecting via Terminal
+Open your local terminal (WSL2 or Mac/Linux).
+Go to the folder where you saved mern-key.pem.
+Set Permissions: chmod 400 mern-key.pem (Crucial! AWS rejects keys that are "too open").
+Connect: ssh -i "mern-key.pem" ec2-user@<YOUR_INSTANCE_PUBLIC_IP>
+*(Find the IP in the EC2 Dashboard under "Instance Summary")*
+
+3. Install Docker & Compose on EC2
+Once you are logged into the EC2 (your prompt should look like [ec2-user@ip-...]), run these commands:
+- Install Docker:
+    sudo dnf update -y
+    sudo dnf install docker -y
+    sudo systemctl start docker
+    sudo systemctl enable docker
+- Set User Permissions
+By default, you have to type sudo for every docker command. Let's fix that:
+sudo usermod -a -G docker ec2-user
+🚨 IMPORTANT: You must type exit to disconnect, then SSH back in for this permission change to take effect.
+- Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+4. The "DevOps" Move: Deploy with Compose
+Instead of manually pulling images, we will use a docker-compose.yml file on the server.
+- Authenticate EC2 with ECR
+Your EC2 needs permission to pull from your ECR.
+aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.<your-region>.amazonaws.com
+
+*Note: if ECR command fails, add IAM role in Ec2 instance with policy AmazonEC2ContainerRegistryReadOnly because your EC2 instance is trying to talk to ECR, but it has no idea who you are or if you have permission to access those images.*
+- Create the Compose File
+On the EC2, create a file: nano docker-compose.yml. Paste this (replace the image URLs with your ECR links):
+
+version: '3.8'
+services:
+  backend:
+    image: <your-account-id>.dkr.ecr.<region>.amazonaws.com/mern-backend:latest
+    ports:
+      - "5000:5000"
+    restart: always
+
+  frontend:
+    image: <your-account-id>.dkr.ecr.<region>.amazonaws.com/mern-frontend:latest
+    ports:
+      - "80:80"
+    restart: always
+*Note: if any time docker is commands not working or giving obsolute error, run this command: newgrp docker*
+5. Spin it up!
+docker-compose up -d
+The -d flag runs it in "Detached" mode, so it stays running even after you close the terminal. Once both FE and BE deployed then under EC2, open the link of public instance url on browser. This will open our deployed application. 
