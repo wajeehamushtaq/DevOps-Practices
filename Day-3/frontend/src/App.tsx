@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>User Management System</h1>
+      <h1>Users Management System</h1>
       
       {/* Create User Form */}
       <div className="form-container">
