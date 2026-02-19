@@ -4,3 +4,11 @@ We will use GitHub Actions, which is free and integrates perfectly with your MER
 2. CD (Continuous Deployment): GitHub SSHes into your EC2 and runs docker-compose pull && docker-compose up -d.
 
 In root project, create a directory structure: .github/workflows/deploy.yml.
+
+🧩 Architecture Flow
+- Image pushed to ECR
+- GitHub Action runs (manually, scheduled, or via ECR event bridge → repository_dispatch)
+- Action logs into AWS
+- SSH into EC2
+- Pull latest image from ECR
+- Restart container
