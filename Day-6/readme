@@ -1,0 +1,21 @@
+## The "Golden Signals" of Monitoring
+In DevOps, we monitor four main things:
+- Latency: How long it takes for a request to return.
+- Traffic: How many users are hitting your site.
+- Errors: The rate of requests that fail (500 errors).
+- Saturation: How "full" your CPU or RAM is.
+
+## The Tech Stack
+We will use the "Industry Standard" monitoring duo:
+- Prometheus: The "Database." It scrapes metrics (numbers) from your containers every few seconds.
+- Grafana: The "Dashboard." It connects to Prometheus and turns those numbers into beautiful, readable graphs.
+- Node Exporter: A tiny tool that sits on your EC2 and "exports" hardware stats (CPU/RAM) so Prometheus can read them.
+
+## The Transition to Orchestration (Kubernetes).
+You’ve mastered Docker Compose, but in the real world, what happens if your EC2 instance fails? Or if your traffic spikes and you need 10 copies of your frontend instead of one? Kubernetes (K8s) is the "Captain" of the ship that automates the scaling, healing, and management of your containers.
+
+🏗️ Core Concepts: The K8s Vocabulary
+Before we touch the CLI, you need to understand the three building blocks we are using today:
+- Pod: The smallest unit in K8s. Think of it as a "wrapper" around your container. A Pod usually runs one container (like your Node.js API).
+- Deployment: The "Manager." You tell the Deployment, "I want 3 replicas of my backend running at all times." If one crashes, the Deployment automatically restarts it.
+- Service: The "Receptionist." Since Pods are constantly dying and being reborn with new internal IPs, a Service provides a stable IP/DNS name so your frontend can always find your backend.
