@@ -1,0 +1,35 @@
+Day 5: Infrastructure as Code (IaC) with Terraform.
+
+You’ve spent the last two days clicking through the AWS Console, setting up Security Groups, and launching EC2 instances manually. In the DevOps world, manual is the enemy. If your server accidentally gets deleted, you have to remember every single setting to rebuild it.
+
+Infrastructure as Code (IaC) allows you to write a script that says, "I want a VPC, a t3.micro EC2, and these 3 Security Group rules." You run the script, and AWS builds it for you in seconds.
+
+--------------------------------------------------------------------------------------------------
+
+🏗️ What is Terraform?
+Terraform is the industry-standard tool for IaC. It uses a language called HCL (HashiCorp Configuration Language). It is declarative, meaning you describe the end state you want, and Terraform figures out the steps to get there.
+
+Why use Terraform for MERN?
+- Immutability: You can "destroy" and "re-create" your entire staging environment with one command.
+- Version Control: Your infrastructure is now a .tf file in your GitHub repo.
+- Speed: Rebuilding your Day 3 server takes 2 minutes instead of 20.
+
+Feature,key_name (EC2 Key Pair),Secret Access Key (IAM)
+Used by,You (the Human),Terraform (the Tool)
+Action,SSH into a Linux server,Create/Delete AWS resources
+Format,A .pem or .ppk file,A 40-character string
+Safe in Code?,Yes (it's just a reference name),NO! (Never commit this to GitHub)
+
+---------------------------------------------------------------------------------------
+## How to do 
+
+- Create a main.tf file
+- Add all instructions there, also create Key-value pair(pem file) in EC2 in same region where you are deploying application
+- Run these commands in your terminal inside the Day-5-Terraform folder:
+    terraform init: Downloads the AWS "plugins" so Terraform knows how to talk to Amazon.
+    terraform plan: The "Preview." It shows you exactly what it will create without actually doing it yet.
+    terraform apply: The "Go" button. Type yes to confirm.
+
+- Watch your AWS Console—you will see a new instance and security group appear automatically!
+- The "DevOps Power" Move: Run terraform destroy. This will delete everything you just created so you don't get charged while you sleep.
+- You'll notice a file created called terraform.tfstate. Never delete this. It is Terraform's "memory." It tracks what is currently live in AWS so it knows what to change next time.
