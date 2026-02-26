@@ -1,0 +1,55 @@
+## What is Serverless?
+In your current MERN stack, your Node.js server is "always on," waiting for a request. In Serverless:
+
+- API Gateway acts as the "Front Door" (replaces Nginx).
+- AWS Lambda acts as the "Function" (replaces your Node.js backend).
+- DynamoDB acts as the "Database" (replaces MongoDB).
+
+-------------------------
+## lambda function
+A Lambda function is just a snippet of code. For the exam, you need to know the Handler—it's the entry point for your code.
+
+### Step 1
+Go to the AWS Lambda Console.
+Click Create function > Author from scratch.
+Name: mern-lambda-test, Runtime: Node.js 20.x.
+Replace the code with this "Exam-style" handler:
+Key Concept: console.log in Lambda automatically sends logs to AWS CloudWatch. This is a major exam topic!
+
+### Step 2: The "Trigger" (API Gateway)
+A Lambda function can't be reached by a URL on its own. It needs a trigger.
+
+In the Lambda Designer, click + Add trigger.
+Select API Gateway.
+Create a REST API (Security: Open for now).
+AWS will give you an Invoke URL.
+
+### Step 3: Deployment Packages vs. Layers
+The DVA-C02 exam loves to ask: "What do you do if your code needs a library like axios or mongoose?"
+
+- Deployment Package (.zip): You zip your code + node_modules and upload it. (Limit: 250MB unzipped).
+- Lambda Layers: You put the node_modules in a "Layer" so multiple functions can share it. This keeps your main code small and clean.
+
+Question: Your Lambda function is taking too long to process data. How do you give it more CPU power?
+Answer: You increase the Memory setting. In AWS Lambda, CPU scales proportionally with the Memory you allocate. You cannot adjust CPU independently
+------------------------
+
+### What is DynamoDB?
+DynamoDB is a NoSQL Key-Value database. Unlike MongoDB (which you used in MERN), you don't manage the server at all. It is built for massive scale with "single-digit millisecond" performance.
+
+Key Exam Concepts:
+- Tables, Items, and Attributes: Equivalent to Tables, Rows, and Columns.
+- Partition Key (PK): Used to spread data across servers.
+- Scalability: You can choose On-Demand (pay per request) or Provisioned (set your own speed
+----------------------------
+
+### Lambda Use Cases: 
+Lambda is the "glue" of AWS. 
+It stays dormant until an event happens.Use Case
+Web Backends: API Gateway receives a request -> Triggers Lambda -> Returns JSON.
+File Processing: A user uploads a photo to S3 -> Triggers Lambda -> Resizes the photo.
+Data Transformation: Data flows through Kinesis -> Lambda cleans/filters it -> Saves to DB.
+Scheduled Tasks: EventBridge (CloudWatch) triggers Lambda every night at 2 AM to generate reports.
+-------------------------
+
+
